@@ -1,6 +1,6 @@
 [Defines]
     INF_VERSION       = 1.25
-    BASE_NAME         = bootloader
+    BASE_NAME         = efi_loader
     FILE_GUID         = 66949615-9653-4a86-8c61-6ef0952973b9
     MODULE_TYPE       = UEFI_APPLICATION
     VERSION_STRING    = 1.0

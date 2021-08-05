@@ -3,7 +3,7 @@
 generate_target()
 {
     printf "%s\n" \
-        "ACTIVE_PLATFORM = bootloader/bootloader.dsc" \
+        "ACTIVE_PLATFORM = efi_loader/efi_loader.dsc" \
         "TARGET          = $TARGET" \
         "TARGET_ARCH     = X64" \
         "TOOL_CHAIN_CONF = Conf/tools_def.txt" \
