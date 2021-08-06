@@ -39,6 +39,8 @@ make_image()
     sudo mount "${LOOP_DEV}p1" "$MOUNT_DIR"
     sudo mkdir -p "${MOUNT_DIR}/EFI/boot/"
     sudo cp "$EFI_FILE" "${MOUNT_DIR}/EFI/boot/bootx64.efi"
+    sudo umount "$MOUNT_DIR"
+    rm -rf "$MOUNT_DIR"
     sudo losetup -d "$LOOP_DEV"
     sync
 }
