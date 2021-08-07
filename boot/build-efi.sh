@@ -14,10 +14,15 @@ generate_target()
 build_efi()
 {
     if [ -z "$EDK_PATH" ]; then
-        EDK_PATH="$HOME/src/build/edk2"
+        printf "EDK_PATH not specified\n" >&2
+        exit 1
     fi
     if [ ! -d "$EDK_PATH" ]; then
         printf "$EDK_PATH does not exist\n" >&2
+        exit 1
+    fi
+    if [ -z "$BUILD_DIR" ]; then
+        printf "BUILD_DIR not specified\n" >&2
         exit 1
     fi
     if [ -z $TARGET ]; then
@@ -35,24 +40,23 @@ build_efi()
 
     generate_target > "$WORKSPACE/Conf/target.txt"
 
-    mkdir -p "$KERNEL_BUILD_DIR/boot"
+    mkdir -p "$BUILD_DIR"
 
     pushd "$EDK_PATH" > /dev/null
-    build -n $(nproc) -D "BUILD_DIR=$KERNEL_BUILD_DIR"
+    build -n $(nproc) -D "BUILD_DIR=$BUILD_DIR"
 }
 
-clear_build()
+clear_conf()
 {
-    rm -rf "$KERNEL_BUILD_DIR/boot"
     rm -rf "$CONF_PATH"
 }
 
 main(){
-    export WORKSPACE="$KERNEL_SRC/boot"
+    export WORKSPACE="$(dirname $(realpath -s $0))"
     export CONF_PATH="$WORKSPACE/Conf"
 
     if [ $# -eq 0 ]; then
-        printf "no option given for build-efi.sh, leaving...\n" >&2
+        printf "no command given for build-efi.sh, leaving...\n" >&2
         exit 1
     fi
 
@@ -62,7 +66,7 @@ main(){
             shift
         ;;
         clear)
-            clear_build
+            clear_conf
             shift
         ;;
         *)
