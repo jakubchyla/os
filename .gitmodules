@@ -1,0 +1,3 @@
+[submodule "boot/include"]
+	path = boot/include
+	url = https://github.com/jakubchyla/tianocore_headers.git

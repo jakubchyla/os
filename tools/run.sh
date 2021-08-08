@@ -18,7 +18,7 @@ if [ -z $IMG_FILE ]; then
     printf "IMG_FILE not specified\n" >&2
     exit 1
 fi
-if [ -z $IMG_FILE ]; then
+if [ -z $OVMF_PATH ]; then
     printf "OVMF_PATH not specified\n" >&2
     exit 1
 fi
