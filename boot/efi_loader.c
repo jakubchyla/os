@@ -1,17 +1,17 @@
 #include <Uefi.h>
 
 
-EFI_STATUS EFIAPI UefiMain (IN EFI_HANDLE ImageHandle, IN EFI_SYSTEM_TABLE  *SystemTable)
+UINTN get_memory_map(EFI_SYSTEM_TABLE* st, EFI_MEMORY_DESCRIPTOR* mem_map_ptr)
 {
+
     EFI_STATUS result;
     UINTN mem_map_size = 0;
-    EFI_MEMORY_DESCRIPTOR *mem_map_ptr = 0;
     UINTN map_key;
     UINTN descriptor_size;
     UINT32 descriptor_version = 1;
 
     // get the memory map size
-    result = SystemTable->BootServices->GetMemoryMap(
+    result = st->BootServices->GetMemoryMap(
         &mem_map_size,
         mem_map_ptr,
         NULL,
@@ -30,14 +30,14 @@ EFI_STATUS EFIAPI UefiMain (IN EFI_HANDLE ImageHandle, IN EFI_SYSTEM_TABLE  *Sys
         void *buffer;
 
         // allocate a pool for the memory map
-        result = SystemTable->BootServices->AllocatePool(
+        result = st->BootServices->AllocatePool(
             EfiLoaderCode,
             mem_map_size,
             &buffer
         );
 
         // get memory map
-        GetMemoryMap_result = SystemTable->BootServices->GetMemoryMap(
+        GetMemoryMap_result = st->BootServices->GetMemoryMap(
             &mem_map_size,
             mem_map_ptr,
             &map_key,
@@ -47,10 +47,20 @@ EFI_STATUS EFIAPI UefiMain (IN EFI_HANDLE ImageHandle, IN EFI_SYSTEM_TABLE  *Sys
 
         // if GetMemoryMap() failed, free pool and try again
         if (GetMemoryMap_result != EFI_SUCCESS){
-            result = SystemTable->BootServices->FreePool(&buffer);
+            result = st->BootServices->FreePool(&buffer);
         }
     }
     while (GetMemoryMap_result != EFI_SUCCESS);
+
+    return map_key;
+}
+
+EFI_STATUS EFIAPI uefi_main(IN EFI_HANDLE ImageHandle, IN EFI_SYSTEM_TABLE  *SystemTable)
+{
+    EFI_STATUS result;
+    EFI_MEMORY_DESCRIPTOR* mem_map_ptr;
+    UINTN map_key;
+    map_key = get_memory_map(SystemTable, mem_map_ptr);
 
     // exit efi
     result = SystemTable->BootServices->ExitBootServices(ImageHandle, map_key);

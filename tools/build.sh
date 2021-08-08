@@ -2,9 +2,7 @@
 
 build_bootloader()
 {
-    EDK_PATH=$EDK_PATH \
-    BUILD_DIR=$BUILD_DIR \
-    "$SRC_DIR/boot/build-efi.sh" build
+    make -C "$SRC_DIR/boot"
 }
 
 clear_build()
@@ -15,7 +13,7 @@ clear_build()
 
 make_image()
 {
-    EFI_FILE="$BUILD_DIR/boot/DEBUG_GCC5/X64/efi_loader.efi" \
+    EFI_FILE="$SRC_DIR/boot/bootx64.efi" \
     OUTPUT_FILE="$BUILD_DIR/os.img" \
     "$TOOLS_DIR/make-image.sh"
 }
