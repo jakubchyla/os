@@ -5,6 +5,22 @@ from typing import List, Dict
 
 class Loader:
     def __init__(self) -> None:
+
+        self.p_type_values: Dict[bytes, str] = {
+            0                        : "PT_NULL",
+            1                        : "PT_LOAD",
+            2                        : "PT_DYNAMIC",
+            3                        : "PT_INTERP",
+            4                        : "PT_NOTE",
+            5                        : "PT_SHLIB",
+            6                        : "PT_PHDR",
+            7                        : "PT_TLS",
+            int("6FFFFFFF", base=16) : "PT_LOOS",
+            int("70000000", base=16) : "PT_HIOS",
+            int("7FFFFFFF", base=16) : "PT_HIPROC"
+        }
+
+
         self.elf_data: bytes = self.load_file()
         self.file_header: Dict[str, bytes] = self.parse_file_header()
 
@@ -52,10 +68,25 @@ class Loader:
             print("wrong architecture, only amd64 supported", file=sys.stderr)
             sys.exit(1)
         
-        # 0x14-0x17d
+        # 0x14-0x17
 
 
         return file_header_data
+
+    def parse_program_header(self, offset: int):
+        program_header_data = dict()
+
+        program_header_data["pt_type"]  = int(self.elf_data[offset:offset+0x4].hex(), base=16)
+        program_header_data["p_flags"]  = int(self.elf_data[offset+0x4:offset+0x8].hex(), base=16)
+        program_header_data["p_offset"] = int(self.elf_data[offset+0x8:offset+0x10].hex(), base=16)
+        program_header_data["p_vaddr"]  = int(self.elf_data[offset+0x10:offset+0x18].hex(), base=16)
+        program_header_data["p_paddr"]  = int(self.elf_data[offset+0x18:offset+0x20].hex(), base=16)
+        program_header_data["p_filesz"] = int(self.elf_data[offset+0x20:offset+0x28].hex(), base=16)
+        program_header_data["p_memsz"]  = int(self.elf_data[offset+0x28:0x30].hex(), base=16)
+        program_header_data["p_align"]  = int(self.elf_data[offset+0x30:offset+0x38].hex(), base=16)
+
+        return program_header_data
+        
 
 
 def main():
